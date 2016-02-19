@@ -93,7 +93,7 @@ public class WeatherDB {
 	/*
 	 * 从数据库中读取某省下所有的城市信息
 	 */
-	public List<City> loadcitieCities(int provinceId) {
+	public List<City> loadCities(int provinceId) {
 		List<City> list = new ArrayList<City>();
 		Cursor cursor = db.query("City", null, "province_id = ?",
 				new String[] { String.valueOf(provinceId) }, null, null, null);
@@ -129,7 +129,7 @@ public class WeatherDB {
 	/*
 	 * 从数据库中读取某省下所有的城市信息
 	 */
-	public List<Country> loadcitieCountries(int cityId) {
+	public List<Country> loadCountries(int cityId) {
 		List<Country> list = new ArrayList<Country>();
 		Cursor cursor = db.query("Country", null, "country_id = ?",
 				new String[] { String.valueOf(cityId) }, null, null, null);
