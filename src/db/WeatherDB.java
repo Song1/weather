@@ -104,7 +104,7 @@ public class WeatherDB {
 				city.setCityName(cursor.getString(cursor
 						.getColumnIndex("city_name")));
 				city.setCityCode(cursor.getString(cursor
-						.getColumnIndex("city_mode")));
+						.getColumnIndex("city_code")));
 				city.setProvinceId(provinceId);
 				list.add(city);
 			} while (cursor.moveToNext());
@@ -131,7 +131,7 @@ public class WeatherDB {
 	 */
 	public List<Country> loadCountries(int cityId) {
 		List<Country> list = new ArrayList<Country>();
-		Cursor cursor = db.query("Country", null, "country_id = ?",
+		Cursor cursor = db.query("Country", null, "city_id = ?",
 				new String[] { String.valueOf(cityId) }, null, null, null);
 		if (cursor.moveToFirst()) {
 			do {
@@ -140,7 +140,7 @@ public class WeatherDB {
 				country.setCountryName(cursor.getString(cursor
 						.getColumnIndex("country_name")));
 				country.setCountryCode(cursor.getString(cursor
-						.getColumnIndex("country_mode")));
+						.getColumnIndex("country_code")));
 				country.setCityId(cityId);
 				list.add(country);
 			} while (cursor.moveToNext());

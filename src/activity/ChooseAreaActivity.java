@@ -15,7 +15,10 @@ import model.Province;
 import db.WeatherDB;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.Window;
@@ -71,6 +74,13 @@ public class ChooseAreaActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		if(prefs.getBoolean("city_selected", false)){
+			Intent intent = new Intent(this, WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.choose_area);
 		listView = (ListView) findViewById(R.id.list_view);
@@ -90,6 +100,14 @@ public class ChooseAreaActivity extends Activity {
 				} else if (currentLevel == LEVEL_CITY) {
 					selectedCity = cityList.get(position);
 					queryCountries();
+				} else if (currentLevel == LEVEL_COUNTRY) {
+					String countryCode = countryList.get(position)
+							.getCountryCode();
+					Intent intent = new Intent(ChooseAreaActivity.this,
+							WeatherActivity.class);
+					intent.putExtra("country_code", countryCode);
+					startActivity(intent);
+					finish();
 				}
 			}
 		});
@@ -177,22 +195,24 @@ public class ChooseAreaActivity extends Activity {
 				if ("province".equals(type)) {
 					result = Utility.handleProvincesResponse(weatherDB,
 							response);
-				}else if("city".equals(type)){
-					result = Utility.handleCitiesResponse(weatherDB, response, selectedProvince.getId());
-				}else if("country".equals(type)){
-					result = Utility.handleCountriesResponse(weatherDB, response, selectedCity.getId());
+				} else if ("city".equals(type)) {
+					result = Utility.handleCitiesResponse(weatherDB, response,
+							selectedProvince.getId());
+				} else if ("country".equals(type)) {
+					result = Utility.handleCountriesResponse(weatherDB,
+							response, selectedCity.getId());
 				}
-				if(result){
-					//通过runOnUiThread()方法回到主线程处理逻辑
+				if (result) {
+					// 通过runOnUiThread()方法回到主线程处理逻辑
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
 							closeProgressDialog();
-							if("province".equals(type)){
+							if ("province".equals(type)) {
 								queryProvince();
-							}else if("city".equals(type)){
+							} else if ("city".equals(type)) {
 								queryCities();
-							}else if("country".equals(type)){
+							} else if ("country".equals(type)) {
 								queryCountries();
 							}
 						}
@@ -202,52 +222,53 @@ public class ChooseAreaActivity extends Activity {
 
 			@Override
 			public void onError(Exception e) {
-				//通过runOnUiThread()方法回到主线程处理逻辑
+				// 通过runOnUiThread()方法回到主线程处理逻辑
 				runOnUiThread(new Runnable() {
-					
+
 					@Override
 					public void run() {
-						//closeProgressDialog();
-						Toast.makeText(ChooseAreaActivity.this, 
-								"加载失败", Toast.LENGTH_SHORT).show();;
+						closeProgressDialog();
+						Toast.makeText(ChooseAreaActivity.this, "加载失败",
+								Toast.LENGTH_SHORT).show();
+						;
 					}
 				});
 			}
 		});
 	}
-	
+
 	/*
 	 * 显示进度对话框
 	 */
-	private void showProgressDialog(){
-		if(progressDialog == null){
+	private void showProgressDialog() {
+		if (progressDialog == null) {
 			progressDialog = new ProgressDialog(this);
 			progressDialog.setMessage("正在加载...");
 			progressDialog.setCanceledOnTouchOutside(false);
 		}
 		progressDialog.show();
 	}
-	
+
 	/*
 	 * 关闭进度对话框
 	 */
-	private void closeProgressDialog(){
-		if(progressDialog != null){
+	private void closeProgressDialog() {
+		if (progressDialog != null) {
 			progressDialog.dismiss();
 		}
 	}
-	
+
 	/*
 	 * 捕获Back按键，根据当前的级别来判断，此时应该返回市列表、省列表、还是直接退出.
 	 */
-	
+
 	@Override
 	public void onBackPressed() {
-		if(currentLevel == LEVEL_COUNTRY){
+		if (currentLevel == LEVEL_COUNTRY) {
 			queryCities();
-		}else if(currentLevel == LEVEL_CITY){
+		} else if (currentLevel == LEVEL_CITY) {
 			queryProvince();
-		}else{
+		} else {
 			finish();
 		}
 	}
